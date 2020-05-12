@@ -3,13 +3,14 @@
 class Node {
   constructor(val) {
     this.val = val;
+    this.prev = null;
     this.next = null;
   }
 }
 
 /** LinkedList: chained together nodes. */
 
-class LinkedList {
+class DoublyLinkedList {
   constructor(vals = []) {
     this.head = null;
     this.tail = null;
@@ -37,9 +38,13 @@ class LinkedList {
   push(val) {
     let newNode = new Node(val);
     // handle empty list
+    newNode.prev = null;
     if (this.head === null) this.head = newNode;
 
-    if (this.tail !== null) this.tail.next = newNode;
+    if (this.tail !== null) {
+      newNode.prev = this.tail;
+      this.tail.next = newNode;
+    }
 
     this.tail = newNode;
     this.length++;
@@ -55,6 +60,7 @@ class LinkedList {
       this.tail = newNode;
     } else {
       newNode.next = this.head;
+      this.head.prev = newNode;
       this.head = newNode;
     }
     this.length++;
@@ -103,16 +109,18 @@ class LinkedList {
     if (idx === this.length) return this.push(val);
 
     let newNode = new Node(val);
-    let prev = this._get(idx - 1);
-    let next = prev.next;
+    let next = this._get(idx);
+    let prev = next.prev;
+
     newNode.next = next;
+    newNode.prev = prev;
     prev.next = newNode;
 
     this.length++;
     return val;
   }
 
-  /** removeAt(idx): return & remove item at idx */
+  /** removeAt(idx): return & remove node at idx */
 
   removeAt(idx) {
     // handle empty list and negative idx
@@ -124,24 +132,28 @@ class LinkedList {
     if (idx === 0) {
       val = this.head;
       this.head = this.head.next;
+      if (this.head) this.head.prev = null;
+
       this.length--;
       if (this.length < 2) this.tail = this.head;
       return val;
     }
 
-    let prev = this._get(idx - 1);
+    let current = this._get(idx);
     
     // remove tail
     if (idx === (this.length - 1)) {
       val = this.tail;
-      prev.next = null;
+      current.prev.next = null;
+
       this.length--;
       if (this.length < 2) this.tail = this.head;
       return val;
     }
 
     // remove from middle
-    prev.next = prev.next.next;
+    current.prev.next = current.next;
+    current.next.prev = current.prev;
     this.length--;
     return val;
     
@@ -164,4 +176,4 @@ class LinkedList {
   }
 }
 
-module.exports = LinkedList;
+module.exports = DoublyLinkedList;
