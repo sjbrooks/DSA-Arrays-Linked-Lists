@@ -128,30 +128,32 @@ class DoublyLinkedList {
     
     let val;
 
-    // remove head
+    // remove head and handle case of list with only one node
     if (idx === 0) {
       val = this.head;
       this.head = this.head.next;
       if (this.head) this.head.prev = null;
 
       this.length--;
+      if (this.length === 0) this.head = null;
       if (this.length < 2) this.tail = this.head;
       return val;
     }
 
-    let current = this._get(idx);
     
     // remove tail
     if (idx === (this.length - 1)) {
       val = this.tail;
-      current.prev.next = null;
-
+      this.tail = this.tail.prev;
+      if (this.tail.prev) this.tail.prev.next = null;
+      
       this.length--;
       if (this.length < 2) this.tail = this.head;
       return val;
     }
-
+    
     // remove from middle
+    let current = this._get(idx);
     current.prev.next = current.next;
     current.next.prev = current.prev;
     this.length--;
